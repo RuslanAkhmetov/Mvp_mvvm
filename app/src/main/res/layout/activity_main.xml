@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="@dimen/padding"
-    tools:context=".MainActivity">
+    tools:context=".ui.login.MainActivity">
 
     <EditText
         android:id="@+id/login_edit_text"

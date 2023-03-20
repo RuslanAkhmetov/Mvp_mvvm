@@ -1,8 +1,10 @@
-package ru.geekbrain.android.mvp_mvvm
+package ru.geekbrain.android.mvp_mvvm.ui.login
 
+import ru.geekbrain.android.mvp_mvvm.domain.LoginAPI
+import ru.geekbrain.android.mvp_mvvm.ui.login.LoginContract
 import java.lang.Thread.sleep
 
-class LoginPresenter: LoginContract.Presenter {
+class LoginPresenter(val loginAPI: LoginAPI) : LoginContract.Presenter {
     private var view: LoginContract.View? = null
     private var currentResult = false
     private var errorText =""
@@ -22,7 +24,8 @@ class LoginPresenter: LoginContract.Presenter {
             sleep(3_000)
             view?.getHandler()?.post {
                 view?.hideProgress()
-                if (checkCredentials(login, password)) {
+                val success = loginAPI.login(login, password)
+                if (success) {
                     view?.setSuccess()
                     currentResult = true
                     errorText =""

@@ -1,4 +1,4 @@
-package ru.geekbrain.android.mvp_mvvm
+package ru.geekbrain.android.mvp_mvvm.ui.login
 
 import android.os.Handler
 import androidx.annotation.MainThread

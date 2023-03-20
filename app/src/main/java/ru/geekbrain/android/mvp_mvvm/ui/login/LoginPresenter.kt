@@ -33,8 +33,27 @@ class LoginPresenter(val userCase: LoginUserCase) : LoginContract.Presenter {
 
     }
 
-    private fun checkCredentials(login: String, password: String) =
-        login == password
+    override fun onForgotPassword(login: String) {
+        userCase.restorePassword(login){
+            if(it){
+                view?.showToast("Letter with new Password was sent")
+            } else {
+                view?.showToast("Login $login incorrect")
+            }
+        }
+    }
+
+    override fun onRegister(login: String, password: String, fullName: String) {
+        userCase.register(login, password, fullName){
+            if(it){
+                view?.showToast("User $fullName was registered")
+            }else{
+                view?.showToast("Login or/and password incorrect")
+            }
+        }
+    }
+
+
 
     override fun onCredentialsChange() {
         TODO("Not yet implemented")

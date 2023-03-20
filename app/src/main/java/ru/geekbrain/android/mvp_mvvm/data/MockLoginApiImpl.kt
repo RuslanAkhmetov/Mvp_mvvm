@@ -7,15 +7,14 @@ class MockLoginApiImpl: LoginAPI {
         return login == password
     }
 
-    override fun register(login: String, password: String, fullName: String): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun register(login: String, password: String, fullName: String): Boolean =
+        login.length > 5 && password.contains(Regex("[A-Z0-9]"))
 
     override fun logout(): Boolean {
         TODO("Not yet implemented")
     }
 
-    override fun restorePassword() {
-        TODO("Not yet implemented")
-    }
+    override fun restorePassword(login: String):Boolean =
+        login.contains("user",ignoreCase = true)
+
 }

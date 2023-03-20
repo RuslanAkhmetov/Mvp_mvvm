@@ -1,6 +1,5 @@
 package ru.geekbrain.android.mvp_mvvm.ui.login
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.graphics.Color
 import android.os.Bundle
@@ -28,10 +27,34 @@ class MainActivity : AppCompatActivity(), LoginContract.View {
         presenter = restorePresenter()
         presenter?.onAttach(this)
 
+        init()
+
         binding.loginButton.setOnClickListener{
             presenter?.onLogin(
                 binding.loginEditText.text.toString(),
                 binding.passwordEditText.text.toString())
+        }
+
+        binding.forgotPasswordButton.setOnClickListener {
+            presenter?.onForgotPassword(binding.loginEditText.text.toString())
+        }
+
+        binding.submitButton.setOnClickListener {
+            presenter?.onRegister(
+                binding.loginEditText.text.toString(),
+                binding.passwordEditText.text.toString(),
+                binding.fullNameEditText.text.toString()
+            )
+            binding.loginButton.isEnabled = true
+            init()
+
+        }
+
+        binding.registerButton.setOnClickListener {
+            binding.fullNameEditText.isVisible = true
+            binding.loginButton.isEnabled = false
+            binding.submitButton.isVisible = true
+            binding.submitButton.isEnabled = true
         }
     }
 
@@ -40,6 +63,11 @@ class MainActivity : AppCompatActivity(), LoginContract.View {
         return presenter ?: LoginPresenter(app.userCase)
     }
 
+    private fun init(){
+        binding.fullNameEditText.isVisible = false
+        binding.submitButton.isVisible = false
+        binding.submitButton.isEnabled = false
+    }
 
     override fun onRetainCustomNonConfigurationInstance(): Any? {
         return presenter
@@ -50,6 +78,8 @@ class MainActivity : AppCompatActivity(), LoginContract.View {
             binding.loginButton.isVisible = false
             binding.loginEditText.isVisible = false
             binding.passwordEditText.isVisible = false
+            binding.fullNameEditText.isVisible = false
+
             binding.root.setBackgroundColor(Color.GREEN)
     }
 
@@ -73,7 +103,10 @@ class MainActivity : AppCompatActivity(), LoginContract.View {
         return Handler(Looper.getMainLooper())
     }
 
-    @SuppressLint("ServiceCast")
+    override fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
     private fun hideKeyboard(activity: Activity) {
         val imm: InputMethodManager =
             activity.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager

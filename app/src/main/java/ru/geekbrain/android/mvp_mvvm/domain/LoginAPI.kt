@@ -13,6 +13,6 @@ interface LoginAPI {
     fun logout(): Boolean
 
     @WorkerThread
-    fun restorePassword()
+    fun restorePassword(login: String):Boolean
 
 }

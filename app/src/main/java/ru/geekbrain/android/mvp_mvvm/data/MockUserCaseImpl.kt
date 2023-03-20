@@ -16,4 +16,27 @@ class MockUserCaseImpl(private val loginAPI: LoginAPI,
         }.start()
 
     }
+
+    override fun restorePassword(login: String, callback: (Boolean) -> Unit) {
+        Thread{
+            val result = loginAPI.restorePassword(login)
+            handler.post {
+                callback(result)
+            }
+        }.start()
+    }
+
+    override fun register(
+        login: String,
+        password: String,
+        fullName: String,
+        callback: (Boolean) -> Unit
+    ) {
+        Thread{
+            val result = loginAPI.register(login, password, fullName)
+            handler.post {
+                callback(result)
+            }
+        }.start()
+    }
 }

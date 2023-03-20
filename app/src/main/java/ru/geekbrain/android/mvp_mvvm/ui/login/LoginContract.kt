@@ -16,11 +16,15 @@ class LoginContract{
         fun hideProgress()
         @MainThread
         fun getHandler(): Handler
+        @MainThread
+        fun showToast(message: String)
     }
 
     interface Presenter{
         fun onAttach(view: View)
         fun onCredentialsChange()
         fun onLogin(login: String, password: String)
+        fun onForgotPassword(login: String)
+        fun onRegister(login: String, password: String, fullName:String)
     }
 }

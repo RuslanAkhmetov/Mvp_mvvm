@@ -14,8 +14,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import ru.geekbrain.android.mvp_mvvm.app
 import ru.geekbrain.android.mvp_mvvm.databinding.ActivityMainBinding
-import ru.geekbrain.android.mvp_mvvm.ui.login.LoginContract
-import ru.geekbrain.android.mvp_mvvm.ui.login.LoginPresenter
 
 
 class MainActivity : AppCompatActivity(), LoginContract.View {
@@ -39,7 +37,7 @@ class MainActivity : AppCompatActivity(), LoginContract.View {
 
     private  fun restorePresenter(): LoginPresenter {
         val presenter = lastCustomNonConfigurationInstance as? LoginPresenter
-        return presenter ?: LoginPresenter(app.loginAPI)
+        return presenter ?: LoginPresenter(app.userCase)
     }
 
 

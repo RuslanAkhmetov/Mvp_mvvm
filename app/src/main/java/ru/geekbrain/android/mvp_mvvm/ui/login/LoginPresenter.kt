@@ -1,10 +1,8 @@
 package ru.geekbrain.android.mvp_mvvm.ui.login
 
-import ru.geekbrain.android.mvp_mvvm.domain.LoginAPI
-import ru.geekbrain.android.mvp_mvvm.ui.login.LoginContract
-import java.lang.Thread.sleep
+import ru.geekbrain.android.mvp_mvvm.domain.LoginUserCase
 
-class LoginPresenter(val loginAPI: LoginAPI) : LoginContract.Presenter {
+class LoginPresenter(val userCase: LoginUserCase) : LoginContract.Presenter {
     private var view: LoginContract.View? = null
     private var currentResult = false
     private var errorText =""
@@ -13,29 +11,25 @@ class LoginPresenter(val loginAPI: LoginAPI) : LoginContract.Presenter {
         this.view = view
         if(currentResult){
             view.setSuccess()
-        } else {
-            view.setError(errorText)
         }
     }
 
     override fun onLogin(login: String, password: String ) {
         view?.showProgress()
-        Thread{
-            sleep(3_000)
-            view?.getHandler()?.post {
-                view?.hideProgress()
-                val success = loginAPI.login(login, password)
-                if (success) {
-                    view?.setSuccess()
-                    currentResult = true
-                    errorText =""
-                } else {
-                    view?.setError("Invalid login")
-                    currentResult = false
-                    errorText ="Invalid login"
-                }
+
+        userCase.login(login, password){result:Boolean ->
+            view?.hideProgress()
+            if (result) {
+                view?.setSuccess()
+                currentResult = true
+                errorText =""
+            } else {
+                view?.setError("Invalid login")
+                currentResult = false
+                errorText ="Invalid login"
             }
-        }.start()
+
+        }
 
     }
 

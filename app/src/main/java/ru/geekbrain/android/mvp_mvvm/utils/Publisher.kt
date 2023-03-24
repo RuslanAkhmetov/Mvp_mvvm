@@ -1,38 +1,52 @@
 package ru.geekbrain.android.mvp_mvvm.utils
 
-/*
-interface Subscriber<T> {
-    fun post(value: T?)
-}
-Короче запись ниже
-*/
+import android.os.Handler
 
-private typealias Subscriber<T> = (T?) -> Unit
+private class Subscriber<T>(
+    private val handler: Handler,
+    val TAG: String?,
+    private val callback: (T?) -> Unit
+){
+    fun invoke(value : T?){
+        handler.post{
+            callback.invoke(value)
+        }
+    }
+}
+
 
 //Проблемы
 // 1) Toast показывается после поворота
 // 2) Поддержка многопоточности
-class Publisher<T> {
-    private var subscribers: MutableSet<Subscriber<T>> = mutableSetOf()
+class Publisher<T>(val isSingle: Boolean = false) {
+    private var subscribers: MutableSet<Subscriber<T?>> = mutableSetOf()
     var value: T? = null
         private set
 
     private  var hasFirstValue = false
 
-    fun subscribe(subscriber: Subscriber<T>){
+    fun subscribe(handler: Handler, TAG: String?=null, callback:(T?) -> Unit,  ){
+        val subscriber = Subscriber(handler, TAG = null, callback )
         this.subscribers.add( subscriber)
         if(hasFirstValue) {
-            subscriber.invoke(value)         //send last value to The new subscriber
+                subscriber.invoke(value)         //send last value to The new subscriber
+        }
+    }
+
+    fun unSubscribe(tag: String){
+        this.subscribers.forEach {
+            if(it.TAG == tag)
+                subscribers.remove(it)
         }
     }
 
     fun post(value: T){
-        this.value = value
-        subscribers.forEach{it.invoke(value)}
-    }
-
-    fun unSubscribe(subscriber: Subscriber<T>){
-       subscribers.remove(subscriber)
+        if(!isSingle) {
+            this.value = value
+        }
+        subscribers.forEach {
+            it.invoke(value)
+        }
     }
 
     fun unSubscribeAll(){

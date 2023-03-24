@@ -3,6 +3,8 @@ package ru.geekbrain.android.mvp_mvvm.ui.login
 import android.app.Activity
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
@@ -32,22 +34,20 @@ class MainActivity : AppCompatActivity() {
                 binding.passwordEditText.text.toString())
         }
 
-        viewModel?.shouldShowProgress?.subscribe { shouldShow ->
+        viewModel?.shouldShowProgress?.subscribe(Handler(Looper.getMainLooper())){ shouldShow ->
             if(shouldShow == true){
                 showProgress()
             } else {
                 hideProgress()
             }
-
         }
 
-        viewModel?.isSuccess?.subscribe {
-            if(it==true) {
+        viewModel?.isSuccess?.subscribe (Handler(Looper.getMainLooper()) ){
+            if (it==true)
                 setSuccess()
-            }
         }
 
-        viewModel?.errorText?.subscribe { message ->
+        viewModel?.errorText?.subscribe(Handler(Looper.getMainLooper()), "ERROR1") { message ->
             if (message != null && message.length > 0){
                 val success = viewModel?.isSuccess?.value
                 if(success==false) {
@@ -78,12 +78,20 @@ class MainActivity : AppCompatActivity() {
             binding.submitButton.isEnabled = true
         }
 
-        viewModel?.toastText?.subscribe { toastText ->
+        viewModel?.toastText?.subscribe(Handler(Looper.getMainLooper())) { toastText ->
             if(toastText != null && toastText.length >0)
                 Toast.makeText(this, toastText, Toast.LENGTH_SHORT).show()
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel?.isSuccess?.unSubscribeAll()      //здесь анонимный subscriber поэтому удалем всех
+        viewModel?.errorText?.unSubscribe("ERROR1")
+        viewModel?.shouldShowProgress?.unSubscribeAll()
+    }
+
+    @Suppress("DEPRECATION")
     private  fun restoreViewModel(): LoginViewModel {
         val viewModel = lastCustomNonConfigurationInstance as? LoginViewModel
         return viewModel ?: LoginViewModel(app.userCase)
@@ -95,6 +103,7 @@ class MainActivity : AppCompatActivity() {
         binding.submitButton.isEnabled = false
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onRetainCustomNonConfigurationInstance(): Any? {
         return viewModel
     }

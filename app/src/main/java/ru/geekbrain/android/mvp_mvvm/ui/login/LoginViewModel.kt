@@ -7,8 +7,8 @@ class LoginViewModel(val loginUserCase: LoginUserCase) : LoginContractMVVM.ViewM
 
     override val shouldShowProgress: Publisher<Boolean> = Publisher()
     override val isSuccess: Publisher<Boolean> = Publisher()
-    override val errorText: Publisher<String?> =  Publisher()
-    override val toastText: Publisher<String?> = Publisher()
+    override val errorText: Publisher<String?> =  Publisher(true)
+    override val toastText: Publisher<String?> = Publisher(true)
 
     override fun onLogin(login: String, password: String ) {
 
